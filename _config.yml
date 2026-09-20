@@ -14,7 +14,7 @@ timezone: Asia/Shanghai
 # URL
 ## 如果你已配置自定义域名，填写你的完整域名（如 https://blog.example.com）
 ## 如果使用 GitHub Pages 默认域名，填写：https://<你的GitHub用户名>.github.io
-url: https://blog.example.com
+url: https://angelic2231.github.io
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
