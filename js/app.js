@@ -1,22 +1,22 @@
 /**
  * Main Application Entry Point
- * Coordinates the Shader Engine and the Morphing Whisper Modal.
+ * Coordinates the Shader Engine and the Growing Whisper Panel.
  */
 import { ShaderEngine } from './shader-engine.js';
 import { MorphModal } from './morph-modal.js';
 
 function initApp() {
   const canvas = document.getElementById('glcanvas');
-  const morphCard = document.getElementById('morph-card');
+  const panel = document.getElementById('whisper-panel');
 
   // 1. Initialize Highly-Optimized WebGL Shader Background
   if (canvas) {
     new ShaderEngine(canvas);
   }
 
-  // 2. Initialize Morphing Button / Modal Controller
-  if (morphCard) {
-    new MorphModal(morphCard);
+  // 2. Initialize Growing Panel Controller
+  if (panel) {
+    new MorphModal(panel);
   }
 }
 

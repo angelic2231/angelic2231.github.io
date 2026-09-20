@@ -1,24 +1,24 @@
 /**
- * MorphModal - Ultra-Smooth Fluid Morphing Button & Whisper Window Controller
+ * MorphModal - Manages the Unified Whisper Panel Growth & Submission
  * 
- * Performance & Animation Architecture:
- * - Fluid dimensional interpolation between exact pixel bounds (190x54px <-> 420xHpx)
- * - Zero 'display: none' layout thrashing; uses GPU-accelerated opacity & transform cross-fading
- * - Offscreen clone measuring for exact target height without visual reflows
- * - Apple-grade cubic-bezier(0.16, 1, 0.3, 1) spring easing
+ * Features:
+ * - The button ITSELF expands into the window (never disappears)
+ * - The title "悄悄话" seamlessly glides from center to window header
+ * - Smooth dimensional transitions (width, height, border-radius) using cubic-bezier(0.16, 1, 0.3, 1)
+ * - Offscreen clone calculation for zero-reflow target height measurement
  */
 export class MorphModal {
-  constructor(cardElement, accessKey = '8f2c9af3-1017-40b7-8ccd-9409fa5dcbfd') {
-    this.card = cardElement;
+  constructor(panelElement, accessKey = '8f2c9af3-1017-40b7-8ccd-9409fa5dcbfd') {
+    this.panel = panelElement;
     this.accessKey = accessKey;
-    this.windowView = this.card.querySelector('.window-view');
-    this.triggerView = this.card.querySelector('.trigger-view');
-    this.closeBtn = this.card.querySelector('#close-btn');
-    this.form = this.card.querySelector('#whisper-form');
-    this.submitBtn = this.card.querySelector('#submit-btn');
-    this.statusMsg = this.card.querySelector('#status-msg');
-    this.nameInput = this.card.querySelector('#user-name');
-    this.messageInput = this.card.querySelector('#user-message');
+    this.panelHeader = this.panel.querySelector('.panel-header');
+    this.panelBody = this.panel.querySelector('.panel-body');
+    this.closeBtn = this.panel.querySelector('#close-btn');
+    this.form = this.panel.querySelector('#whisper-form');
+    this.submitBtn = this.panel.querySelector('#submit-btn');
+    this.statusMsg = this.panel.querySelector('#status-msg');
+    this.nameInput = this.panel.querySelector('#user-name');
+    this.messageInput = this.panel.querySelector('#user-message');
 
     this.isExpanded = false;
     this.isAnimating = false;
@@ -33,17 +33,25 @@ export class MorphModal {
   getExpandedSize() {
     const targetWidth = Math.min(420, window.innerWidth - 36);
 
-    // Measure exact natural height using a detached offscreen clone
-    const clone = this.windowView.cloneNode(true);
+    // Measure exact full natural height using a detached offscreen clone
+    const clone = this.panel.cloneNode(true);
     clone.style.position = 'absolute';
     clone.style.visibility = 'hidden';
     clone.style.pointerEvents = 'none';
     clone.style.width = `${targetWidth}px`;
-    clone.style.opacity = '1';
-    clone.style.transform = 'none';
-    document.body.appendChild(clone);
+    clone.style.height = 'auto';
+    clone.classList.add('expanded');
 
-    const measuredHeight = clone.offsetHeight || 380;
+    // Make body visible in clone to calculate accurate total height
+    const cloneBody = clone.querySelector('.panel-body');
+    if (cloneBody) {
+      cloneBody.style.opacity = '1';
+      cloneBody.style.transform = 'none';
+      cloneBody.style.display = 'block';
+    }
+
+    document.body.appendChild(clone);
+    const measuredHeight = clone.offsetHeight || 410;
     document.body.removeChild(clone);
 
     return { width: targetWidth, height: measuredHeight };
@@ -57,18 +65,18 @@ export class MorphModal {
     const { width, height } = this.getExpandedSize();
 
     // Lock starting dimensions
-    this.card.style.width = `${this.collapsedWidth}px`;
-    this.card.style.height = `${this.collapsedHeight}px`;
-    this.card.style.borderRadius = `${this.collapsedRadius}px`;
+    this.panel.style.width = `${this.collapsedWidth}px`;
+    this.panel.style.height = `${this.collapsedHeight}px`;
+    this.panel.style.borderRadius = `${this.collapsedRadius}px`;
 
-    // Force layout flush so transition starts cleanly from exact initial state
-    void this.card.offsetHeight;
+    // Force layout flush so transition starts cleanly from exact button geometry
+    void this.panel.offsetHeight;
 
-    // Apply target dimensions for fluid spring expansion
-    this.card.style.width = `${width}px`;
-    this.card.style.height = `${height}px`;
-    this.card.style.borderRadius = '28px';
-    this.card.classList.add('expanded');
+    // Apply target dimensions for the button to physically expand into the window
+    this.panel.style.width = `${width}px`;
+    this.panel.style.height = `${height}px`;
+    this.panel.style.borderRadius = '28px';
+    this.panel.classList.add('expanded');
 
     setTimeout(() => {
       this.isAnimating = false;
@@ -81,11 +89,11 @@ export class MorphModal {
     this.isExpanded = false;
     this.isAnimating = true;
 
-    // Smooth dimensional collapse back to pill button
-    this.card.style.width = `${this.collapsedWidth}px`;
-    this.card.style.height = `${this.collapsedHeight}px`;
-    this.card.style.borderRadius = `${this.collapsedRadius}px`;
-    this.card.classList.remove('expanded');
+    // Smoothly shrink panel back into the initial button dimensions
+    this.panel.style.width = `${this.collapsedWidth}px`;
+    this.panel.style.height = `${this.collapsedHeight}px`;
+    this.panel.style.borderRadius = `${this.collapsedRadius}px`;
+    this.panel.classList.remove('expanded');
 
     setTimeout(() => {
       this.isAnimating = false;
@@ -155,14 +163,14 @@ export class MorphModal {
   }
 
   bindEvents() {
-    // Click on card when collapsed triggers expansion
-    this.card.addEventListener('click', (e) => {
+    // Clicking the panel when collapsed expands it
+    this.panel.addEventListener('click', (e) => {
       if (!this.isExpanded && !this.isAnimating) {
         this.expand();
       }
     });
 
-    // Close button collapses
+    // Clicking close button shrinks it back
     if (this.closeBtn) {
       this.closeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -170,19 +178,19 @@ export class MorphModal {
       });
     }
 
-    // Escape key closes modal
+    // Escape key shrinks it back
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.isExpanded) {
         this.collapse();
       }
     });
 
-    // Window resize maintains fluid bounds
+    // Window resize keeps expanded panel nicely sized
     window.addEventListener('resize', () => {
       if (this.isExpanded && !this.isAnimating) {
         const { width, height } = this.getExpandedSize();
-        this.card.style.width = `${width}px`;
-        this.card.style.height = `${height}px`;
+        this.panel.style.width = `${width}px`;
+        this.panel.style.height = `${height}px`;
       }
     }, { passive: true });
 

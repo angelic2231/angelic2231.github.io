@@ -13,22 +13,19 @@
   <!-- WebGL Background Canvas -->
   <canvas id="glcanvas"></canvas>
 
-  <!-- Centered Morphing Stage (No Scroll) -->
+  <!-- Centered Screen Stage -->
   <div class="stage-container">
-    <div class="morph-card" id="morph-card">
+    <div class="whisper-panel" id="whisper-panel">
       
-      <!-- Collapsed State: Single Center Button -->
-      <div class="trigger-view">
-        <span class="trigger-text">悄悄话</span>
+      <!-- Panel Header: Title stays visible continuously -->
+      <div class="panel-header">
+        <h2 class="panel-title" id="panel-title">悄悄话</h2>
+        <button type="button" class="close-btn" id="close-btn" aria-label="收起">×</button>
       </div>
 
-      <!-- Expanded State: Whisper / Question Window -->
-      <div class="window-view">
-        <div class="card-header">
-          <h2 class="card-title">悄悄话</h2>
-          <button type="button" class="close-btn" id="close-btn" aria-label="关闭">×</button>
-        </div>
-        <p class="card-desc">写下你想说的话，将直接私密投递至博主邮箱。</p>
+      <!-- Panel Body: Form unfurls as the panel grows -->
+      <div class="panel-body" id="panel-body">
+        <p class="panel-desc">写下你想说的话，将直接私密投递至博主邮箱。</p>
 
         <form id="whisper-form">
           <div class="form-group">

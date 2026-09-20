@@ -1,6 +1,6 @@
 :root {
   --bg-dark: #030308;
-  --card-bg: rgba(13, 15, 27, 0.6);
+  --card-bg: rgba(13, 15, 27, 0.62);
   --card-border: rgba(255, 255, 255, 0.14);
   --card-bloom: 0 0 50px rgba(130, 90, 255, 0.28), 0 0 100px rgba(40, 160, 255, 0.16), 0 25px 50px -10px rgba(0, 0, 0, 0.85);
   --card-bloom-hover: 0 0 70px rgba(140, 100, 255, 0.38), 0 0 130px rgba(50, 180, 255, 0.24), 0 30px 60px -10px rgba(0, 0, 0, 0.9);
@@ -43,7 +43,7 @@ html, body {
   pointer-events: none;
 }
 
-/* Centered Screen Container */
+/* Centered Screen Stage */
 .stage-container {
   position: fixed;
   inset: 0;
@@ -55,8 +55,8 @@ html, body {
   pointer-events: none;
 }
 
-/* Morphing Card Entity */
-.morph-card {
+/* The Unified Panel (Starts as button, grows into window) */
+.whisper-panel {
   pointer-events: auto;
   position: relative;
   width: 190px;
@@ -68,34 +68,43 @@ html, body {
   backdrop-filter: blur(28px) saturate(185%);
   -webkit-backdrop-filter: blur(28px) saturate(185%);
   overflow: hidden;
-  will-change: width, height, border-radius, transform;
+  will-change: width, height, border-radius, padding, transform;
   cursor: pointer;
-  transition: width 0.42s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.42s cubic-bezier(0.16, 1, 0.3, 1),
-              border-radius 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              padding 0.45s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.35s ease,
               border-color 0.35s ease,
               transform 0.25s ease;
 }
 
-.morph-card:not(.expanded):hover {
-  transform: scale(1.05);
+/* Hover state when collapsed as button */
+.whisper-panel:not(.expanded):hover {
+  transform: scale(1.06);
   box-shadow: var(--card-bloom-hover), var(--card-inner-glow);
   border-color: rgba(255, 255, 255, 0.32);
 }
 
-.morph-card:not(.expanded):active {
+.whisper-panel:not(.expanded):active {
   transform: scale(0.98);
 }
 
-.morph-card.expanded {
+/* Expanded state: Panel grew bigger */
+.whisper-panel.expanded {
   cursor: default;
   box-shadow: var(--card-bloom-hover), var(--card-inner-glow);
   border-color: rgba(255, 255, 255, 0.22);
+  justify-content: flex-start;
+  padding: 30px 28px 28px;
 }
 
 /* Top Specular Gradient Highlight */
-.morph-card::before {
+.whisper-panel::before {
   content: "";
   position: absolute;
   top: 0;
@@ -105,73 +114,50 @@ html, body {
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.35s ease;
 }
 
-.morph-card.expanded::before {
+.whisper-panel.expanded::before {
   opacity: 1;
 }
 
-/* State 1: Trigger View (Pill Button Text) */
-.trigger-view {
-  position: absolute;
-  inset: 0;
+/* Header Area (Contains the title that smoothly transitions) */
+.panel-header {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s ease, transform 0.25s ease;
-  pointer-events: auto;
+  transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
 }
 
-.trigger-text {
-  font-size: 0.96rem;
+.whisper-panel.expanded .panel-header {
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+/* Title: Stays visible at all times! Moves from center to header */
+.panel-title {
+  font-size: 1rem;
   font-weight: 500;
   letter-spacing: 0.05em;
   color: #ffffff;
   text-shadow: 0 0 16px var(--accent-glow);
   white-space: nowrap;
+  user-select: none;
+  transition: font-size 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              font-weight 0.45s ease,
+              letter-spacing 0.45s ease;
 }
 
-.morph-card.expanded .trigger-view {
-  opacity: 0;
-  transform: scale(0.9);
-  pointer-events: none;
-}
-
-/* State 2: Window View (Question Form) */
-.window-view {
-  position: relative;
-  width: 100%;
-  padding: 32px 28px;
-  opacity: 0;
-  transform: scale(0.96);
-  pointer-events: none;
-  transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0.1s,
-              transform 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
-}
-
-.morph-card.expanded .window-view {
-  opacity: 1;
-  transform: scale(1);
-  pointer-events: auto;
-}
-
-/* Card Header */
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.card-title {
+.whisper-panel.expanded .panel-title {
   font-size: 1.45rem;
   font-weight: 700;
-  color: #ffffff;
   letter-spacing: -0.025em;
   text-shadow: 0 0 20px var(--accent-glow);
 }
 
+/* Close Button (Hidden when collapsed, fades in when expanded) */
 .close-btn {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -185,7 +171,16 @@ html, body {
   font-size: 1.25rem;
   cursor: pointer;
   line-height: 1;
-  transition: all 0.2s ease;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.6);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.whisper-panel.expanded .close-btn {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
 }
 
 .close-btn:hover {
@@ -195,7 +190,23 @@ html, body {
   transform: scale(1.08);
 }
 
-.card-desc {
+/* Unfurling Body: Fades in inside the expanding panel */
+.panel-body {
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.whisper-panel.expanded .panel-body {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: opacity 0.35s ease 0.12s, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
+}
+
+.panel-desc {
   font-size: 0.86rem;
   color: var(--text-secondary);
   line-height: 1.55;
@@ -303,7 +314,7 @@ html, body {
 }
 
 @media (max-width: 480px) {
-  .window-view {
-    padding: 26px 20px;
+  .whisper-panel.expanded {
+    padding: 26px 20px 22px;
   }
 }
