@@ -13,84 +13,44 @@
   <!-- WebGL Background Canvas -->
   <canvas id="glcanvas"></canvas>
 
-  <!-- Side Navigation Dots -->
-  <nav class="side-nav" aria-label="Page navigation">
-    <button class="nav-dot active" id="dot-0" aria-label="Introduction"></button>
-    <button class="nav-dot" id="dot-1" aria-label="Question Box"></button>
-  </nav>
+  <!-- Centered Morphing Stage (No Scroll) -->
+  <div class="stage-container">
+    <div class="morph-card" id="morph-card">
+      
+      <!-- Collapsed State: Single Center Button -->
+      <div class="trigger-view">
+        <span class="trigger-text">悄悄话</span>
+      </div>
 
-  <!-- Scroll Viewport Container -->
-  <main class="viewport" id="viewport">
-    <div class="scroll-track" id="scroll-track">
+      <!-- Expanded State: Whisper / Question Window -->
+      <div class="window-view">
+        <div class="card-header">
+          <h2 class="card-title">悄悄话</h2>
+          <button type="button" class="close-btn" id="close-btn" aria-label="关闭">×</button>
+        </div>
+        <p class="card-desc">写下你想说的话，将直接私密投递至博主邮箱。</p>
 
-      <!-- Section 1: Introduction -->
-      <section class="section" id="section-intro">
-        <div class="window-card" id="card-intro">
-          <h1 class="brand-title">angelic</h1>
-          <div class="brand-subtitle">Digital Sanctuary</div>
-          <p class="intro-body">
-            一个由数学着色器、光线与微观波动交织而成的私人空间。这里没有繁杂的信息流与冗余框架，仅有纯粹色彩在暗夜中的流动与沉淀。
-          </p>
-          <div class="pill-group">
-            <span class="pill">WebGL</span>
-            <span class="pill">GLSL</span>
-            <span class="pill">Chromatic</span>
-            <span class="pill">Minimal</span>
+        <form id="whisper-form">
+          <div class="form-group">
+            <label class="form-label" for="user-name">用户名</label>
+            <input type="text" id="user-name" name="name" class="form-input" placeholder="你的称呼（留空默认为匿名）">
           </div>
-          <button type="button" class="action-btn" id="btn-to-whisper">
-            匿名提问箱
+
+          <div class="form-group">
+            <label class="form-label" for="user-message">想说的话</label>
+            <textarea id="user-message" name="message" class="form-textarea" placeholder="写下你想说的话..." required></textarea>
+          </div>
+
+          <button type="submit" class="action-btn" id="submit-btn">
+            发送
           </button>
-        </div>
-      </section>
+        </form>
 
-      <!-- Section 2: Anonymous Question Box -->
-      <section class="section" id="section-whisper">
-        <div class="window-card" id="card-whisper">
-          <h2 class="brand-title" style="font-size: 1.7rem;">匿名提问箱</h2>
-          <div class="brand-subtitle">Ask Me Anything</div>
-          <p class="intro-body" style="margin-bottom: 16px; font-size: 0.88rem;">
-            向我发起一个完全匿名的提问。你的身份不会被记录，问题将直接投递至我的私人邮箱。无论好奇、讨论还是随想，都可以畅所欲言。
-          </p>
-
-          <form id="whisper-form">
-            <!-- Topic Inspiration Chips -->
-            <div class="topic-group">
-              <button type="button" class="topic-pill" data-topic="技术探讨">技术探讨</button>
-              <button type="button" class="topic-pill" data-topic="生活随想">生活随想</button>
-              <button type="button" class="topic-pill" data-topic="审美与设计">审美与设计</button>
-              <button type="button" class="topic-pill" data-topic="随便聊聊">随便聊聊</button>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="message-content">你想问什么？</label>
-              <textarea id="message-content" name="message" class="form-textarea" placeholder="写下你的疑问、好奇或想探讨的话题..." required></textarea>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="sender-name">希望我如何称呼你（可选）</label>
-              <input type="text" id="sender-name" name="name" class="form-input" placeholder="留空默认为匿名提问者">
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="sender-contact">联系方式（可选，若希望收到私下回信）</label>
-              <input type="text" id="sender-contact" name="contact" class="form-input" placeholder="例如邮箱或社交账号">
-            </div>
-
-            <button type="submit" class="action-btn" id="submit-btn">
-              投递问题
-            </button>
-          </form>
-
-          <div class="status-msg" id="status-msg" aria-live="polite"></div>
-
-          <a class="secondary-link" id="btn-to-intro" role="button">
-            返回介绍
-          </a>
-        </div>
-      </section>
+        <div class="status-msg" id="status-msg" aria-live="polite"></div>
+      </div>
 
     </div>
-  </main>
+  </div>
 
   <!-- Modular Application Entry -->
   <script type="module" src="js/app.js"></script>
