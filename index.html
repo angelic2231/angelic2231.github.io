@@ -16,7 +16,7 @@
   <!-- Side Navigation Dots -->
   <nav class="side-nav" aria-label="Page navigation">
     <button class="nav-dot active" id="dot-0" aria-label="Introduction"></button>
-    <button class="nav-dot" id="dot-1" aria-label="Whisper"></button>
+    <button class="nav-dot" id="dot-1" aria-label="Question Box"></button>
   </nav>
 
   <!-- Scroll Viewport Container -->
@@ -38,33 +38,46 @@
             <span class="pill">Minimal</span>
           </div>
           <button type="button" class="action-btn" id="btn-to-whisper">
-            悄悄话
+            匿名提问箱
           </button>
         </div>
       </section>
 
-      <!-- Section 2: Whisper Window -->
+      <!-- Section 2: Anonymous Question Box -->
       <section class="section" id="section-whisper">
         <div class="window-card" id="card-whisper">
-          <h2 class="brand-title" style="font-size: 1.7rem;">悄悄话</h2>
-          <div class="brand-subtitle">Whisper to Owner</div>
-          <p class="intro-body" style="margin-bottom: 20px; font-size: 0.88rem;">
-            写下你想对我说的话。内容将直接投递至我的私人邮箱，全站无公开展示。
+          <h2 class="brand-title" style="font-size: 1.7rem;">匿名提问箱</h2>
+          <div class="brand-subtitle">Ask Me Anything</div>
+          <p class="intro-body" style="margin-bottom: 16px; font-size: 0.88rem;">
+            向我发起一个完全匿名的提问。你的身份不会被记录，问题将直接投递至我的私人邮箱。无论好奇、讨论还是随想，都可以畅所欲言。
           </p>
 
           <form id="whisper-form">
-            <div class="form-group">
-              <label class="form-label" for="sender-name">你的称呼或联系方式（可选）</label>
-              <input type="text" id="sender-name" name="name" class="form-input" placeholder="例如：某位访客 / your@email.com">
+            <!-- Topic Inspiration Chips -->
+            <div class="topic-group">
+              <button type="button" class="topic-pill" data-topic="技术探讨">技术探讨</button>
+              <button type="button" class="topic-pill" data-topic="生活随想">生活随想</button>
+              <button type="button" class="topic-pill" data-topic="审美与设计">审美与设计</button>
+              <button type="button" class="topic-pill" data-topic="随便聊聊">随便聊聊</button>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="message-content">心事与留言</label>
-              <textarea id="message-content" name="message" class="form-textarea" placeholder="在此输入你的悄悄话..." required></textarea>
+              <label class="form-label" for="message-content">你想问什么？</label>
+              <textarea id="message-content" name="message" class="form-textarea" placeholder="写下你的疑问、好奇或想探讨的话题..." required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="sender-name">希望我如何称呼你（可选）</label>
+              <input type="text" id="sender-name" name="name" class="form-input" placeholder="留空默认为匿名提问者">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="sender-contact">联系方式（可选，若希望收到私下回信）</label>
+              <input type="text" id="sender-contact" name="contact" class="form-input" placeholder="例如邮箱或社交账号">
             </div>
 
             <button type="submit" class="action-btn" id="submit-btn">
-              发送信件
+              投递问题
             </button>
           </form>
 

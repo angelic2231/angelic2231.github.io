@@ -156,6 +156,33 @@ html, body {
   backdrop-filter: blur(12px);
 }
 
+.topic-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+
+.topic-pill {
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  padding: 5px 11px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.22s ease;
+  user-select: none;
+}
+
+.topic-pill:hover, .topic-pill.active {
+  background: rgba(130, 170, 255, 0.18);
+  border-color: rgba(140, 190, 255, 0.45);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(120, 160, 255, 0.25);
+}
+
 /* Buttons */
 .action-btn {
   display: inline-flex;
