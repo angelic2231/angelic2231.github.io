@@ -10,14 +10,15 @@
   <style>
     :root {
       --bg-dark: #030308;
-      --card-bg: rgba(14, 16, 28, 0.58);
+      --card-bg: rgba(13, 15, 27, 0.52);
       --card-border: rgba(255, 255, 255, 0.13);
-      --card-bloom: 0 0 50px rgba(120, 80, 255, 0.22), 0 0 100px rgba(40, 160, 255, 0.14), 0 25px 50px -10px rgba(0, 0, 0, 0.8);
-      --card-inner-glow: inset 0 1px 1px rgba(255, 255, 255, 0.28), inset 0 0 24px rgba(150, 120, 255, 0.08);
-      --text-primary: #f5f6fa;
-      --text-secondary: rgba(230, 235, 250, 0.65);
+      --card-bloom: 0 0 55px rgba(130, 90, 255, 0.25), 0 0 110px rgba(40, 160, 255, 0.16), 0 30px 60px -12px rgba(0, 0, 0, 0.8);
+      --card-bloom-hover: 0 0 75px rgba(140, 100, 255, 0.35), 0 0 135px rgba(50, 180, 255, 0.22), 0 35px 70px -12px rgba(0, 0, 0, 0.85);
+      --card-inner-glow: inset 0 1px 1px rgba(255, 255, 255, 0.3), inset 0 0 24px rgba(150, 120, 255, 0.08);
+      --text-primary: #f6f7fb;
+      --text-secondary: rgba(230, 235, 250, 0.68);
       --text-muted: rgba(200, 210, 235, 0.45);
-      --accent-glow: rgba(130, 170, 255, 0.45);
+      --accent-glow: rgba(130, 170, 255, 0.5);
     }
 
     * {
@@ -50,36 +51,39 @@
       pointer-events: none;
     }
 
-    /* Scroll Viewport Container */
+    /* Scroll Viewport: Fluid Continuous Scroll (Lenis Physics) */
     .viewport {
-      position: relative;
+      position: fixed;
+      inset: 0;
       width: 100%;
       height: 100%;
       height: 100dvh;
-      overflow-y: scroll;
+      overflow-y: auto;
       overflow-x: hidden;
-      scroll-snap-type: y mandatory;
-      scroll-behavior: smooth;
       z-index: 10;
       scrollbar-width: none;
       -ms-overflow-style: none;
+      -webkit-overflow-scrolling: touch;
     }
     .viewport::-webkit-scrollbar {
       display: none;
     }
 
-    /* Full-Screen Snap Section */
+    /* Scroll Track with generous spatial depth */
+    .scroll-track {
+      position: relative;
+      width: 100%;
+      min-height: 200dvh;
+    }
+
+    /* Sections */
     .section {
       width: 100%;
-      height: 100%;
-      height: 100dvh;
-      min-height: -webkit-fill-available;
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
+      min-height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 32px 20px;
       position: relative;
     }
 
@@ -89,45 +93,39 @@
       max-width: 440px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 26px;
+      border-radius: 28px;
       box-shadow: var(--card-bloom), var(--card-inner-glow);
-      backdrop-filter: blur(32px) saturate(190%);
-      -webkit-backdrop-filter: blur(32px) saturate(190%);
-      padding: 36px 32px;
+      backdrop-filter: blur(30px) saturate(185%);
+      -webkit-backdrop-filter: blur(30px) saturate(185%);
+      padding: 38px 34px;
       position: relative;
       overflow: hidden;
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
-      animation: cardEnter 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+      will-change: transform, opacity, filter;
+      transition: box-shadow 0.4s ease, border-color 0.4s ease;
     }
 
-    @keyframes cardEnter {
-      from {
-        opacity: 0;
-        transform: translateY(24px) scale(0.97);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+    .window-card:hover {
+      box-shadow: var(--card-bloom-hover), var(--card-inner-glow);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
-    /* Top Subtle Specular Light Bar */
+    /* Top Specular Gradient Highlight */
     .window-card::before {
       content: "";
       position: absolute;
       top: 0;
-      left: 15%;
-      right: 15%;
+      left: 12%;
+      right: 12%;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
       pointer-events: none;
     }
 
-    /* Typography & Hierarchy */
+    /* Typography */
     .brand-title {
-      font-size: 2.1rem;
+      font-size: 2.15rem;
       font-weight: 700;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.035em;
       line-height: 1.15;
       margin-bottom: 6px;
       color: #ffffff;
@@ -135,25 +133,25 @@
     }
 
     .brand-subtitle {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       color: var(--text-muted);
       margin-bottom: 22px;
     }
 
     .intro-body {
       font-size: 0.95rem;
-      line-height: 1.7;
+      line-height: 1.72;
       color: var(--text-secondary);
-      margin-bottom: 24px;
+      margin-bottom: 26px;
     }
 
     .pill-group {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 30px;
+      margin-bottom: 32px;
     }
 
     .pill {
@@ -167,15 +165,15 @@
       backdrop-filter: blur(12px);
     }
 
-    /* Buttons & Links */
+    /* Buttons */
     .action-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 100%;
       padding: 13px 20px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.06));
+      border: 1px solid rgba(255, 255, 255, 0.22);
       border-radius: 14px;
       color: #ffffff;
       font-size: 0.92rem;
@@ -184,13 +182,13 @@
       cursor: pointer;
       text-decoration: none;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 0 20px rgba(120, 80, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 24px rgba(130, 90, 255, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
 
     .action-btn:hover {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.09));
-      border-color: rgba(255, 255, 255, 0.35);
-      box-shadow: 0 0 30px rgba(130, 90, 255, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.1));
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 34px rgba(140, 100, 255, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.4);
       transform: translateY(-1px);
     }
 
@@ -200,7 +198,7 @@
 
     .secondary-link {
       display: inline-block;
-      margin-top: 18px;
+      margin-top: 20px;
       font-size: 0.84rem;
       color: var(--text-muted);
       text-decoration: none;
@@ -252,7 +250,7 @@
     .form-input:focus, .form-textarea:focus {
       border-color: rgba(140, 180, 255, 0.55);
       background: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 0 20px rgba(120, 160, 255, 0.25);
+      box-shadow: 0 0 22px rgba(120, 160, 255, 0.25);
     }
 
     /* Status Banner */
@@ -309,7 +307,7 @@
     @media (max-width: 480px) {
       .window-card {
         padding: 28px 22px;
-        border-radius: 22px;
+        border-radius: 24px;
       }
       .brand-title {
         font-size: 1.8rem;
@@ -321,7 +319,7 @@
   </style>
 </head>
 <body>
-  <!-- WebGL Chromatism Canvas -->
+  <!-- WebGL Chromatic Canvas -->
   <canvas id="glcanvas"></canvas>
 
   <!-- Side Navigation Dots -->
@@ -332,60 +330,62 @@
 
   <!-- Scroll Viewport Container -->
   <main class="viewport" id="viewport">
-    
-    <!-- Section 1: Introduction -->
-    <section class="section" id="section-intro">
-      <div class="window-card">
-        <h1 class="brand-title">angelic</h1>
-        <div class="brand-subtitle">Digital Sanctuary</div>
-        <p class="intro-body">
-          一个由数学着色器、光线与微观波动交织而成的私人空间。这里没有繁杂的信息流与冗余框架，仅有纯粹色彩在暗夜中的流动与沉淀。
-        </p>
-        <div class="pill-group">
-          <span class="pill">WebGL</span>
-          <span class="pill">GLSL</span>
-          <span class="pill">Chromatic</span>
-          <span class="pill">Minimal</span>
-        </div>
-        <a href="#section-whisper" class="action-btn" id="btn-to-whisper">
-          悄悄话
-        </a>
-      </div>
-    </section>
-
-    <!-- Section 2: Whisper Window -->
-    <section class="section" id="section-whisper">
-      <div class="window-card">
-        <h2 class="brand-title" style="font-size: 1.7rem;">悄悄话</h2>
-        <div class="brand-subtitle">Whisper to Owner</div>
-        <p class="intro-body" style="margin-bottom: 20px; font-size: 0.88rem;">
-          写下你想对我说的话。内容将直接投递至我的私人邮箱，全站无公开展示。
-        </p>
-
-        <form id="whisper-form">
-          <div class="form-group">
-            <label class="form-label" for="sender-name">你的称呼或联系方式（可选）</label>
-            <input type="text" id="sender-name" name="name" class="form-input" placeholder="例如：某位访客 / your@email.com">
+    <div class="scroll-track" id="scroll-track">
+      
+      <!-- Section 1: Introduction -->
+      <section class="section" id="section-intro">
+        <div class="window-card" id="card-intro">
+          <h1 class="brand-title">angelic</h1>
+          <div class="brand-subtitle">Digital Sanctuary</div>
+          <p class="intro-body">
+            一个由数学着色器、光线与微观波动交织而成的私人空间。这里没有繁杂的信息流与冗余框架，仅有纯粹色彩在暗夜中的流动与沉淀。
+          </p>
+          <div class="pill-group">
+            <span class="pill">WebGL</span>
+            <span class="pill">GLSL</span>
+            <span class="pill">Chromatic</span>
+            <span class="pill">Minimal</span>
           </div>
-
-          <div class="form-group">
-            <label class="form-label" for="message-content">心事与留言</label>
-            <textarea id="message-content" name="message" class="form-textarea" placeholder="在此输入你的悄悄话..." required></textarea>
-          </div>
-
-          <button type="submit" class="action-btn" id="submit-btn">
-            发送信件
+          <button type="button" class="action-btn" id="btn-to-whisper">
+            悄悄话
           </button>
-        </form>
+        </div>
+      </section>
 
-        <div class="status-msg" id="status-msg" aria-live="polite"></div>
+      <!-- Section 2: Whisper Window -->
+      <section class="section" id="section-whisper">
+        <div class="window-card" id="card-whisper">
+          <h2 class="brand-title" style="font-size: 1.7rem;">悄悄话</h2>
+          <div class="brand-subtitle">Whisper to Owner</div>
+          <p class="intro-body" style="margin-bottom: 20px; font-size: 0.88rem;">
+            写下你想对我说的话。内容将直接投递至我的私人邮箱，全站无公开展示。
+          </p>
 
-        <a href="#section-intro" class="secondary-link" id="btn-to-intro">
-          返回介绍
-        </a>
-      </div>
-    </section>
+          <form id="whisper-form">
+            <div class="form-group">
+              <label class="form-label" for="sender-name">你的称呼或联系方式（可选）</label>
+              <input type="text" id="sender-name" name="name" class="form-input" placeholder="例如：某位访客 / your@email.com">
+            </div>
 
+            <div class="form-group">
+              <label class="form-label" for="message-content">心事与留言</label>
+              <textarea id="message-content" name="message" class="form-textarea" placeholder="在此输入你的悄悄话..." required></textarea>
+            </div>
+
+            <button type="submit" class="action-btn" id="submit-btn">
+              发送信件
+            </button>
+          </form>
+
+          <div class="status-msg" id="status-msg" aria-live="polite"></div>
+
+          <a class="secondary-link" id="btn-to-intro" role="button">
+            返回介绍
+          </a>
+        </div>
+      </section>
+
+    </div>
   </main>
 
   <script>
@@ -647,14 +647,12 @@
 
 
     /* ==========================================================================
-       2. Smooth Easing Scroll & Navigation Controller
+       2. Natural Inertial Momentum Scroll & Spatial Card Transition
        ========================================================================== */
     (function () {
       const viewport = document.getElementById('viewport');
-      const sections = [
-        document.getElementById('section-intro'),
-        document.getElementById('section-whisper')
-      ];
+      const cardIntro = document.getElementById('card-intro');
+      const cardWhisper = document.getElementById('card-whisper');
       const dots = [
         document.getElementById('dot-0'),
         document.getElementById('dot-1')
@@ -662,49 +660,119 @@
       const btnToWhisper = document.getElementById('btn-to-whisper');
       const btnToIntro = document.getElementById('btn-to-intro');
 
-      let activeIndex = 0;
-      let isScrolling = false;
+      let targetScroll = viewport.scrollTop;
+      let currentScroll = viewport.scrollTop;
+      let isLerping = false;
+      let isTouch = false;
 
-      function updateActiveDot(index) {
-        if (index === activeIndex) return;
-        activeIndex = index;
-        dots.forEach((dot, i) => {
-          dot.classList.toggle('active', i === index);
-        });
+      // Update spatial card transitions based on continuous scroll progress
+      function updateSpatialCards() {
+        const vh = viewport.clientHeight || window.innerHeight;
+        const scrollY = viewport.scrollTop;
+        const progress = Math.max(0, Math.min(1, scrollY / vh));
+
+        // Card 1: Introduction (dissolves and glides up smoothly)
+        const introOpacity = Math.max(0, 1 - progress * 1.5);
+        const introY = -progress * 90;
+        const introScale = 1 - progress * 0.07;
+        const introBlur = progress * 10;
+        cardIntro.style.transform = `translate3d(0, ${introY}px, 0) scale(${introScale})`;
+        cardIntro.style.opacity = introOpacity;
+        cardIntro.style.filter = introBlur > 0.1 ? `blur(${introBlur}px)` : 'none';
+        cardIntro.style.pointerEvents = progress > 0.5 ? 'none' : 'auto';
+
+        // Card 2: Whisper (emerges and ascends from below with bloom clarity)
+        const whisperOpacity = Math.max(0, Math.min(1, (progress - 0.15) / 0.75));
+        const whisperY = (1 - progress) * 90;
+        const whisperScale = 0.93 + progress * 0.07;
+        const whisperBlur = (1 - progress) * 10;
+        cardWhisper.style.transform = `translate3d(0, ${whisperY}px, 0) scale(${whisperScale})`;
+        cardWhisper.style.opacity = whisperOpacity;
+        cardWhisper.style.filter = whisperBlur > 0.1 ? `blur(${whisperBlur}px)` : 'none';
+        cardWhisper.style.pointerEvents = progress < 0.5 ? 'none' : 'auto';
+
+        // Active side navigation indicator
+        const activeIndex = progress > 0.5 ? 1 : 0;
+        dots[0].classList.toggle('active', activeIndex === 0);
+        dots[1].classList.toggle('active', activeIndex === 1);
       }
 
-      function scrollToSection(index) {
-        if (index < 0 || index >= sections.length) return;
-        isScrolling = true;
-        updateActiveDot(index);
-        sections[index].scrollIntoView({ behavior: 'smooth' });
-        setTimeout(() => {
-          isScrolling = false;
-        }, 650);
+      // Smooth inertia momentum loop (desktop mouse wheel)
+      function lerpLoop() {
+        if (!isLerping) return;
+        const diff = targetScroll - currentScroll;
+        if (Math.abs(diff) > 0.5) {
+          currentScroll += diff * 0.09; // Buttery organic damping
+          viewport.scrollTop = currentScroll;
+          updateSpatialCards();
+          requestAnimationFrame(lerpLoop);
+        } else {
+          currentScroll = targetScroll;
+          viewport.scrollTop = currentScroll;
+          updateSpatialCards();
+          isLerping = false;
+        }
       }
 
-      dots.forEach((dot, i) => {
-        dot.addEventListener('click', () => scrollToSection(i));
-      });
+      function smoothScrollTo(y) {
+        const maxScroll = viewport.scrollHeight - viewport.clientHeight;
+        targetScroll = Math.max(0, Math.min(maxScroll, y));
+        if (!isLerping) {
+          isLerping = true;
+          currentScroll = viewport.scrollTop;
+          requestAnimationFrame(lerpLoop);
+        }
+      }
 
+      // Mobile Touch: 100% native smooth momentum physics
+      viewport.addEventListener('touchstart', () => {
+        isTouch = true;
+        isLerping = false;
+        targetScroll = currentScroll = viewport.scrollTop;
+      }, { passive: true });
+
+      viewport.addEventListener('scroll', () => {
+        if (!isLerping) {
+          targetScroll = currentScroll = viewport.scrollTop;
+          updateSpatialCards();
+        }
+      }, { passive: true });
+
+      // Desktop Mouse Wheel: Lenis-style continuous momentum
+      viewport.addEventListener('wheel', (e) => {
+        if (isTouch) isTouch = false;
+
+        // Allow natural internal scrolling inside textarea
+        if (e.target && e.target.closest && e.target.closest('.form-textarea')) {
+          const ta = e.target.closest('.form-textarea');
+          if (ta.scrollHeight > ta.clientHeight) return;
+        }
+
+        // Horizontal gestures (e.g. Mac swipe) preserved
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+
+        const maxScroll = viewport.scrollHeight - viewport.clientHeight;
+        targetScroll = Math.max(0, Math.min(maxScroll, targetScroll + e.deltaY * 0.85));
+
+        if (!isLerping) {
+          isLerping = true;
+          currentScroll = viewport.scrollTop;
+          requestAnimationFrame(lerpLoop);
+        }
+        e.preventDefault();
+      }, { passive: false });
+
+      // Click Navigations
+      dots[0].addEventListener('click', () => smoothScrollTo(0));
+      dots[1].addEventListener('click', () => smoothScrollTo(viewport.clientHeight));
       btnToWhisper.addEventListener('click', (e) => {
         e.preventDefault();
-        scrollToSection(1);
+        smoothScrollTo(viewport.clientHeight);
       });
-
       btnToIntro.addEventListener('click', (e) => {
         e.preventDefault();
-        scrollToSection(0);
+        smoothScrollTo(0);
       });
-
-      // Track scroll position for active indicator
-      viewport.addEventListener('scroll', () => {
-        if (isScrolling) return;
-        const scrollPos = viewport.scrollTop;
-        const vh = viewport.clientHeight;
-        const current = Math.round(scrollPos / vh);
-        updateActiveDot(current);
-      }, { passive: true });
 
       // Keyboard arrow keys navigation
       window.addEventListener('keydown', (e) => {
@@ -712,38 +780,16 @@
           return;
         }
         if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
-          if (activeIndex === 0) {
-            e.preventDefault();
-            scrollToSection(1);
-          }
+          e.preventDefault();
+          smoothScrollTo(viewport.clientHeight);
         } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-          if (activeIndex === 1) {
-            e.preventDefault();
-            scrollToSection(0);
-          }
+          e.preventDefault();
+          smoothScrollTo(0);
         }
       });
 
-      // Mouse wheel easing snap
-      let wheelDebounce = null;
-      viewport.addEventListener('wheel', (e) => {
-        if (e.target && e.target.closest && e.target.closest('.form-textarea')) {
-          return;
-        }
-        if (Math.abs(e.deltaY) > 20) {
-          if (isScrolling || wheelDebounce) return;
-          if (e.deltaY > 0 && activeIndex === 0) {
-            e.preventDefault();
-            scrollToSection(1);
-          } else if (e.deltaY < 0 && activeIndex === 1) {
-            e.preventDefault();
-            scrollToSection(0);
-          }
-          wheelDebounce = setTimeout(() => {
-            wheelDebounce = null;
-          }, 700);
-        }
-      }, { passive: false });
+      // Initial layout update
+      updateSpatialCards();
     })();
 
 
