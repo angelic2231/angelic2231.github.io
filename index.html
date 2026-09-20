@@ -53,7 +53,6 @@
         precision highp float;
 
         uniform vec2 u_resolution;
-        uniform vec2 u_mouse;
         uniform float u_time;
 
         float hash(vec2 p) {
@@ -93,14 +92,9 @@
 
         void main() {
           vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);
-          vec2 mouse = (u_mouse.xy - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);
-
-          // Interaction ripple & distortion
-          float d = length(uv - mouse);
-          vec2 mouseDistort = (uv - mouse) * exp(-d * 3.5) * 0.45;
 
           float t = u_time * 0.12;
-          vec2 p = uv * 2.4 + mouseDistort;
+          vec2 p = uv * 2.4;
 
           // Domain warping layers
           vec2 q = vec2(
@@ -184,22 +178,7 @@
       gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
       const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
-      const mouseLocation = gl.getUniformLocation(program, 'u_mouse');
       const timeLocation = gl.getUniformLocation(program, 'u_time');
-
-      let targetMouse = { x: window.innerWidth * 0.5, y: window.innerHeight * 0.5 };
-      let currentMouse = { x: window.innerWidth * 0.5, y: window.innerHeight * 0.5 };
-      let hasInteracted = false;
-
-      function updateMouse(e) {
-        hasInteracted = true;
-        const rect = canvas.getBoundingClientRect();
-        targetMouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
-        targetMouse.y = (rect.height - (e.clientY - rect.top)) * (canvas.height / rect.height);
-      }
-
-      window.addEventListener('pointermove', updateMouse, { passive: true });
-      window.addEventListener('pointerdown', updateMouse, { passive: true });
 
       function resize() {
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -210,12 +189,6 @@
           canvas.width = width;
           canvas.height = height;
           gl.viewport(0, 0, width, height);
-          if (!hasInteracted) {
-            targetMouse.x = width * 0.5;
-            targetMouse.y = height * 0.5;
-            currentMouse.x = width * 0.5;
-            currentMouse.y = height * 0.5;
-          }
         }
       }
 
@@ -227,20 +200,7 @@
       function render(now) {
         const time = (now - startTime) * 0.001;
 
-        if (!hasInteracted) {
-          // Subtle celestial idle float
-          const dpr = Math.min(window.devicePixelRatio || 1, 2);
-          const cx = (window.innerWidth * 0.5 + Math.sin(time * 0.8) * 120) * dpr;
-          const cy = (window.innerHeight * 0.5 + Math.cos(time * 0.6) * 100) * dpr;
-          targetMouse.x = cx;
-          targetMouse.y = cy;
-        }
-
-        currentMouse.x += (targetMouse.x - currentMouse.x) * 0.06;
-        currentMouse.y += (targetMouse.y - currentMouse.y) * 0.06;
-
         gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-        gl.uniform2f(mouseLocation, currentMouse.x, currentMouse.y);
         gl.uniform1f(timeLocation, time);
 
         gl.drawArrays(gl.TRIANGLES, 0, 3);
