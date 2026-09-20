@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -8,39 +8,390 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>angelic</title>
   <style>
+    :root {
+      --bg-dark: #030308;
+      --card-bg: rgba(14, 16, 28, 0.58);
+      --card-border: rgba(255, 255, 255, 0.13);
+      --card-bloom: 0 0 50px rgba(120, 80, 255, 0.22), 0 0 100px rgba(40, 160, 255, 0.14), 0 25px 50px -10px rgba(0, 0, 0, 0.8);
+      --card-inner-glow: inset 0 1px 1px rgba(255, 255, 255, 0.28), inset 0 0 24px rgba(150, 120, 255, 0.08);
+      --text-primary: #f5f6fa;
+      --text-secondary: rgba(230, 235, 250, 0.65);
+      --text-muted: rgba(200, 210, 235, 0.45);
+      --accent-glow: rgba(130, 170, 255, 0.45);
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
     }
+
     html, body {
       width: 100%;
       height: 100%;
       height: 100dvh;
       min-height: -webkit-fill-available;
       overflow: hidden;
-      background-color: #030308;
-      position: fixed;
-      inset: 0;
-      touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    canvas {
+
+    /* Fixed WebGL Canvas Background */
+    #glcanvas {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
       height: 100dvh;
       display: block;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Scroll Viewport Container */
+    .viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      z-index: 10;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .viewport::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Full-Screen Snap Section */
+    .section {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      min-height: -webkit-fill-available;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+    }
+
+    /* Glassmorphic Card Window */
+    .window-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 26px;
+      box-shadow: var(--card-bloom), var(--card-inner-glow);
+      backdrop-filter: blur(32px) saturate(190%);
+      -webkit-backdrop-filter: blur(32px) saturate(190%);
+      padding: 36px 32px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+      animation: cardEnter 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    }
+
+    @keyframes cardEnter {
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Top Subtle Specular Light Bar */
+    .window-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 15%;
+      right: 15%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+      pointer-events: none;
+    }
+
+    /* Typography & Hierarchy */
+    .brand-title {
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 6px;
+      color: #ffffff;
+      text-shadow: 0 0 24px var(--accent-glow);
+    }
+
+    .brand-subtitle {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    .intro-body {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 30px;
+    }
+
+    .pill {
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+      backdrop-filter: blur(12px);
+    }
+
+    /* Buttons & Links */
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 13px 20px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      color: #ffffff;
+      font-size: 0.92rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 20px rgba(120, 80, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .action-btn:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.09));
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 30px rgba(130, 90, 255, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .action-btn:active {
+      transform: translateY(0);
+    }
+
+    .secondary-link {
+      display: inline-block;
+      margin-top: 18px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.25s ease;
+    }
+
+    .secondary-link:hover {
+      color: var(--text-primary);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      letter-spacing: 0.03em;
+      color: var(--text-secondary);
+      margin-bottom: 7px;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #ffffff;
+      font-size: 0.92rem;
+      outline: none;
+      transition: all 0.25s ease;
+      font-family: inherit;
+    }
+
+    .form-textarea {
+      resize: none;
+      height: 105px;
+      line-height: 1.5;
+    }
+
+    .form-input::placeholder, .form-textarea::placeholder {
+      color: rgba(200, 210, 235, 0.3);
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      border-color: rgba(140, 180, 255, 0.55);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 20px rgba(120, 160, 255, 0.25);
+    }
+
+    /* Status Banner */
+    .status-msg {
+      margin-top: 14px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      min-height: 20px;
+      transition: all 0.3s ease;
+    }
+    .status-msg.success {
+      color: #72e2ae;
+      text-shadow: 0 0 12px rgba(114, 226, 174, 0.4);
+    }
+    .status-msg.error {
+      color: #ff758c;
+      text-shadow: 0 0 12px rgba(255, 117, 140, 0.4);
+    }
+    .status-msg.loading {
+      color: rgba(200, 220, 255, 0.7);
+    }
+
+    /* Navigation Side Dots */
+    .side-nav {
+      position: fixed;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      z-index: 100;
+    }
+
+    .nav-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.22);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-dot.active {
+      height: 24px;
+      border-radius: 12px;
+      background: #ffffff;
+      box-shadow: 0 0 16px rgba(140, 190, 255, 0.85), 0 0 30px rgba(140, 190, 255, 0.4);
+    }
+
+    @media (max-width: 480px) {
+      .window-card {
+        padding: 28px 22px;
+        border-radius: 22px;
+      }
+      .brand-title {
+        font-size: 1.8rem;
+      }
+      .side-nav {
+        right: 12px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- WebGL Chromatism Canvas -->
   <canvas id="glcanvas"></canvas>
 
+  <!-- Side Navigation Dots -->
+  <nav class="side-nav" aria-label="Page navigation">
+    <button class="nav-dot active" id="dot-0" aria-label="Introduction"></button>
+    <button class="nav-dot" id="dot-1" aria-label="Whisper"></button>
+  </nav>
+
+  <!-- Scroll Viewport Container -->
+  <main class="viewport" id="viewport">
+    
+    <!-- Section 1: Introduction -->
+    <section class="section" id="section-intro">
+      <div class="window-card">
+        <h1 class="brand-title">angelic</h1>
+        <div class="brand-subtitle">Digital Sanctuary</div>
+        <p class="intro-body">
+          一个由数学着色器、光线与微观波动交织而成的私人空间。这里没有繁杂的信息流与冗余框架，仅有纯粹色彩在暗夜中的流动与沉淀。
+        </p>
+        <div class="pill-group">
+          <span class="pill">WebGL</span>
+          <span class="pill">GLSL</span>
+          <span class="pill">Chromatic</span>
+          <span class="pill">Minimal</span>
+        </div>
+        <a href="#section-whisper" class="action-btn" id="btn-to-whisper">
+          悄悄话
+        </a>
+      </div>
+    </section>
+
+    <!-- Section 2: Whisper Window -->
+    <section class="section" id="section-whisper">
+      <div class="window-card">
+        <h2 class="brand-title" style="font-size: 1.7rem;">悄悄话</h2>
+        <div class="brand-subtitle">Whisper to Owner</div>
+        <p class="intro-body" style="margin-bottom: 20px; font-size: 0.88rem;">
+          写下你想对我说的话。内容将直接投递至我的私人邮箱，全站无公开展示。
+        </p>
+
+        <form id="whisper-form">
+          <div class="form-group">
+            <label class="form-label" for="sender-name">你的称呼或联系方式（可选）</label>
+            <input type="text" id="sender-name" name="name" class="form-input" placeholder="例如：某位访客 / your@email.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="message-content">心事与留言</label>
+            <textarea id="message-content" name="message" class="form-textarea" placeholder="在此输入你的悄悄话..." required></textarea>
+          </div>
+
+          <button type="submit" class="action-btn" id="submit-btn">
+            发送信件
+          </button>
+        </form>
+
+        <div class="status-msg" id="status-msg" aria-live="polite"></div>
+
+        <a href="#section-intro" class="secondary-link" id="btn-to-intro">
+          返回介绍
+        </a>
+      </div>
+    </section>
+
+  </main>
+
   <script>
+    /* ==========================================================================
+       1. Chromatic WebGL Shader Engine
+       ========================================================================== */
     (function () {
       const canvas = document.getElementById('glcanvas');
       let gl = null;
@@ -292,6 +643,170 @@
       if (init()) {
         requestAnimationFrame(render);
       }
+    })();
+
+
+    /* ==========================================================================
+       2. Smooth Easing Scroll & Navigation Controller
+       ========================================================================== */
+    (function () {
+      const viewport = document.getElementById('viewport');
+      const sections = [
+        document.getElementById('section-intro'),
+        document.getElementById('section-whisper')
+      ];
+      const dots = [
+        document.getElementById('dot-0'),
+        document.getElementById('dot-1')
+      ];
+      const btnToWhisper = document.getElementById('btn-to-whisper');
+      const btnToIntro = document.getElementById('btn-to-intro');
+
+      let activeIndex = 0;
+      let isScrolling = false;
+
+      function updateActiveDot(index) {
+        if (index === activeIndex) return;
+        activeIndex = index;
+        dots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+      }
+
+      function scrollToSection(index) {
+        if (index < 0 || index >= sections.length) return;
+        isScrolling = true;
+        updateActiveDot(index);
+        sections[index].scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => {
+          isScrolling = false;
+        }, 650);
+      }
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => scrollToSection(i));
+      });
+
+      btnToWhisper.addEventListener('click', (e) => {
+        e.preventDefault();
+        scrollToSection(1);
+      });
+
+      btnToIntro.addEventListener('click', (e) => {
+        e.preventDefault();
+        scrollToSection(0);
+      });
+
+      // Track scroll position for active indicator
+      viewport.addEventListener('scroll', () => {
+        if (isScrolling) return;
+        const scrollPos = viewport.scrollTop;
+        const vh = viewport.clientHeight;
+        const current = Math.round(scrollPos / vh);
+        updateActiveDot(current);
+      }, { passive: true });
+
+      // Keyboard arrow keys navigation
+      window.addEventListener('keydown', (e) => {
+        if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+          return;
+        }
+        if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+          if (activeIndex === 0) {
+            e.preventDefault();
+            scrollToSection(1);
+          }
+        } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+          if (activeIndex === 1) {
+            e.preventDefault();
+            scrollToSection(0);
+          }
+        }
+      });
+
+      // Mouse wheel easing snap
+      let wheelDebounce = null;
+      viewport.addEventListener('wheel', (e) => {
+        if (e.target && e.target.closest && e.target.closest('.form-textarea')) {
+          return;
+        }
+        if (Math.abs(e.deltaY) > 20) {
+          if (isScrolling || wheelDebounce) return;
+          if (e.deltaY > 0 && activeIndex === 0) {
+            e.preventDefault();
+            scrollToSection(1);
+          } else if (e.deltaY < 0 && activeIndex === 1) {
+            e.preventDefault();
+            scrollToSection(0);
+          }
+          wheelDebounce = setTimeout(() => {
+            wheelDebounce = null;
+          }, 700);
+        }
+      }, { passive: false });
+    })();
+
+
+    /* ==========================================================================
+       3. Whisper Form Submission (Web3Forms API)
+       ========================================================================== */
+    (function () {
+      const form = document.getElementById('whisper-form');
+      const submitBtn = document.getElementById('submit-btn');
+      const statusMsg = document.getElementById('status-msg');
+      const messageInput = document.getElementById('message-content');
+      const nameInput = document.getElementById('sender-name');
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const message = messageInput.value.trim();
+        const name = nameInput.value.trim() || '匿名访客';
+
+        if (!message) {
+          statusMsg.className = 'status-msg error';
+          statusMsg.textContent = '请输入留言内容。';
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.6';
+        statusMsg.className = 'status-msg loading';
+        statusMsg.textContent = '正在投递信件...';
+
+        try {
+          const response = await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+              access_key: '8f2c9af3-1017-40b7-8ccd-9409fa5dcbfd',
+              name: name,
+              message: message,
+              subject: '来自 angelic.today 的新悄悄话'
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            statusMsg.className = 'status-msg success';
+            statusMsg.textContent = '信件已成功送达博主邮箱。';
+            form.reset();
+          } else {
+            statusMsg.className = 'status-msg error';
+            statusMsg.textContent = data.message || '发送失败，请稍后重试。';
+          }
+        } catch (err) {
+          statusMsg.className = 'status-msg error';
+          statusMsg.textContent = '网络连接异常，发送失败。';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = '1';
+        }
+      });
     })();
   </script>
 </body>
