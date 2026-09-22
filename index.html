@@ -2,54 +2,72 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#030308">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>angelic</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="angelic 的悄悄话信箱 - 发送私密匿名留言">
+  <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)">
+  <title>悄悄话 · angelic</title>
+
+  <!-- Performance: DNS Prefetch & Preconnect for Form Action -->
+  <link rel="dns-prefetch" href="https://api.web3forms.com">
+  <link rel="preconnect" href="https://api.web3forms.com" crossorigin>
+
+  <!-- High Performance: Zero-request Inline SVG Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23171717' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='20' height='16' x='2' y='4' rx='2'/><path d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/></svg>">
+
   <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/app.js"></script>
 </head>
 <body>
-  <!-- WebGL Background Canvas -->
-  <canvas id="glcanvas"></canvas>
+  <main class="site-container">
+    <div class="card">
+      <header class="card-header">
+        <h1 class="card-title">悄悄话</h1>
+        <p class="card-desc">写下你想说的话，将直接私密投递至博主邮箱。</p>
+      </header>
 
-  <!-- Centered Screen Stage -->
-  <div class="stage-container">
-    <div class="whisper-panel" id="whisper-panel">
-      
-      <!-- Panel Header: Title stays visible continuously -->
-      <div class="panel-header">
-        <h2 class="panel-title" id="panel-title">悄悄话</h2>
-        <button type="button" class="close-btn" id="close-btn" aria-label="收起">×</button>
-      </div>
+      <form id="whisper-form" class="whisper-form" novalidate>
+        <div class="form-item">
+          <label for="user-name" class="form-label">称呼</label>
+          <input
+            type="text"
+            id="user-name"
+            name="name"
+            class="form-input"
+            placeholder="你的称呼（留空默认为匿名）"
+            maxlength="50"
+            autocomplete="off"
+            spellcheck="false"
+          >
+        </div>
 
-      <!-- Panel Body: Form unfurls as the panel grows -->
-      <div class="panel-body" id="panel-body">
-        <p class="panel-desc">写下你想说的话，将直接私密投递至博主邮箱。</p>
+        <div class="form-item">
+          <label for="user-message" class="form-label">
+            想说的话 <span class="required" aria-hidden="true">*</span>
+          </label>
+          <textarea
+            id="user-message"
+            name="message"
+            class="form-textarea"
+            placeholder="写下你想说的话..."
+            rows="5"
+            required
+            maxlength="5000"
+          ></textarea>
+        </div>
 
-        <form id="whisper-form">
-          <div class="form-group">
-            <label class="form-label" for="user-name">用户名</label>
-            <input type="text" id="user-name" name="name" class="form-input" placeholder="你的称呼（留空默认为匿名）">
+        <div class="form-footer">
+          <div class="shortcut-hint" aria-hidden="true">
+            <kbd id="mod-key">Ctrl</kbd> + <kbd>Enter</kbd> 发送
           </div>
-
-          <div class="form-group">
-            <label class="form-label" for="user-message">想说的话</label>
-            <textarea id="user-message" name="message" class="form-textarea" placeholder="写下你想说的话..." required></textarea>
-          </div>
-
-          <button type="submit" class="action-btn" id="submit-btn">
+          <button type="submit" id="submit-btn" class="submit-btn">
             发送
           </button>
-        </form>
+        </div>
 
-        <div class="status-msg" id="status-msg" aria-live="polite"></div>
-      </div>
-
+        <div id="status-msg" class="status-msg" role="status" aria-live="polite"></div>
+      </form>
     </div>
-  </div>
-
-  <!-- Modular Application Entry -->
-  <script type="module" src="js/app.js"></script>
+  </main>
 </body>
 </html>
