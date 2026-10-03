@@ -8,7 +8,7 @@ import * as Plugin from "./quartz/plugins"
  */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "右美沙芬百科 (DXM Wiki)",
+    pageTitle: "克咳片百科",
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
